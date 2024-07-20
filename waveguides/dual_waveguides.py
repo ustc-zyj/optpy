@@ -259,7 +259,7 @@ class Reverse_Waveguide(BasicDual_Waveguide):
             width = self.ww2,
             initial_point = (self.lx, ly2))
         waveguide.segment(
-            length = self.cx - self.lx + self.br,
+            length = self.cx - self.lx + self.br + self.rr,
             direction = "+x",
             **ld_waveguide)
         waveguide.turn(
@@ -268,7 +268,7 @@ class Reverse_Waveguide(BasicDual_Waveguide):
             tolerance = tolerance,
             **ld_waveguide)
         waveguide.segment(
-            length = self.br - self.rr - 2 * cr2 * np.sin(self.ca2/2),
+            length = self.br - 2 * cr2 * np.sin(self.ca2/2),
             direction = "-x",
             **ld_waveguide)
         waveguide.segment(
@@ -306,7 +306,7 @@ class Reverse_Waveguide(BasicDual_Waveguide):
         waveguides.append(waveguide)
         
         waveguides.extend(
-            super().create_waveguide(tolerance, iswg2hidden=True))
+            super(BasicDual_Waveguide, self).create_waveguide(tolerance))
         
         return waveguides
         
@@ -325,47 +325,34 @@ class Reverse_Waveguide(BasicDual_Waveguide):
         ry2 = (self.cy - self.rr - self.cg2 - self.ww2/2) * 2 - ly2
             
         couplers = []
-        
-        if self.LT:
-            couplers.extend(
-                create_taper(
-                    posl = (self.lx, ly2), 
-                    posr = (self.rx, ry2), 
-                    waveguide_width = self.ww2, 
-                    taper_length = taper_length, 
-                    tip_length = tip_length, 
-                    tip_width_nm = tip_width2_nm, 
-                    anchor_base = anchor_base, 
-                    anchor_length = anchor_length))
-        else:
-            couplers.extend(
-                super().create_taper(
-                    taper_length = taper_length,
-                    tip_length = tip_length,
-                    tip_width_nm = tip_width_nm,
-                    anchor_base = anchor_base,
-                    anchor_length = anchor_length,
-                    istp2hidden = True))
-            couplers.extend(
-                create_taper(
-                    posl = (self.lx, ly2), 
-                    posr = None, 
-                    waveguide_width = self.ww2, 
-                    taper_length = taper_length, 
-                    tip_length = tip_length, 
-                    tip_width_nm = tip_width2_nm, 
-                    anchor_base = anchor_base, 
-                    anchor_length = anchor_length))
-            couplers.extend(
-                create_taper(
-                    posl = (self.lx, ly2 + self.br*2), 
-                    posr = None, 
-                    waveguide_width = self.ww2, 
-                    taper_length = taper_length, 
-                    tip_length = tip_length, 
-                    tip_width_nm = tip_width2_nm, 
-                    anchor_base = anchor_base, 
-                    anchor_length = anchor_length))
+        couplers.extend(
+            super().create_taper(
+                taper_length = taper_length,
+                tip_length = tip_length,
+                tip_width_nm = tip_width_nm,
+                anchor_base = anchor_base,
+                anchor_length = anchor_length,
+                istp2hidden = True))
+        couplers.extend(
+            create_taper(
+                posl = (self.lx, ly2), 
+                posr = None, 
+                waveguide_width = self.ww2, 
+                taper_length = taper_length, 
+                tip_length = tip_length, 
+                tip_width_nm = tip_width2_nm, 
+                anchor_base = anchor_base, 
+                anchor_length = anchor_length))
+        couplers.extend(
+            create_taper(
+                posl = (self.lx, ly2 + self.br*2), 
+                posr = None, 
+                waveguide_width = self.ww2, 
+                taper_length = taper_length, 
+                tip_length = tip_length, 
+                tip_width_nm = tip_width2_nm, 
+                anchor_base = anchor_base, 
+                anchor_length = anchor_length))
             
         return couplers
             

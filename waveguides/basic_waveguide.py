@@ -134,7 +134,7 @@ class Basic_Waveguide(object):
     def create_waveguide(self, tolerance=1e-3):
         ld_waveguide = get_ld('ld_waveguide')
         waveguides = []
-        cr = self.rr + self.cg + self.ww/2
+        cr = self.rr + self.cg + self.cw/2
         wy = self.cy + cr * (2*np.cos(self.ca/2) - 1)
         waveguide = gp.Path(
             width = self.ww,
@@ -257,7 +257,7 @@ class Basic_Waveguide(object):
                 **epara)
         return electrodes, holepos
     
-    def create(self, bias=(0,0), tolerance=1e-3):
+    def create(self, bias=(0,0), flip=False, tolerance=1e-3):
         structures = []
         structures.extend(self.create_ring(tolerance * 0.1))
         structures.extend(self.create_waveguide(tolerance))
@@ -268,14 +268,18 @@ class Basic_Waveguide(object):
         electrodes, elec_holepos = self.create_electrode()
         structures.extend(electrodes)
         holepos = therm_holepos + elec_holepos
+        if flip:
+            for structure in structures:
+                structure.mirror((self.cx, self.cy), (self.cx + 1, self.cy))
+            for kk, pos in enumerate(holepos):
+                holepos[kk] = (2 * self.cx - pos[0], pos[1])
         for structure in structures:
             structure.translate(bias[0], bias[1])
-        for kk in range(len(holepos)):
-            pos = holepos[kk]
+        for kk, pos in enumerate(holepos):
             holepos[kk] = (pos[0] + bias[0], pos[1] + bias[1])
         return structures, holepos
     
-    def __call__(self, cell, bias=(0,0), tolerance=1e-3):
-        structures, holepos = self.create(bias, tolerance)
+    def __call__(self, cell, bias=(0,0), flip=False, tolerance=1e-3):
+        structures, holepos = self.create(bias, flip, tolerance)
         cell.add(structures)
         return holepos

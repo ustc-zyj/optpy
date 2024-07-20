@@ -164,54 +164,54 @@ def create_thermode(
         hole_num,
         rotate_angle_deg
         ):    
-    def surface_thermode(
-            ring_center,
-            ring_radius,
-            thermode_width,
-            thermode_gap,
-            hole_radius,
-            hole_distance,
-            hole_num,
-            initial_angle_deg,
-            final_angle_deg
-            ):
-        ld_thermode = get_ld('ld_pad')
+    # def surface_thermode(
+    #         ring_center,
+    #         ring_radius,
+    #         thermode_width,
+    #         thermode_gap,
+    #         hole_radius,
+    #         hole_distance,
+    #         hole_num,
+    #         initial_angle_deg,
+    #         final_angle_deg
+    #         ):
+    #     ld_thermode = get_ld('ld_pad')
         
-        initial_angle = initial_angle_deg / 180 * np.pi
-        final_angle = final_angle_deg / 180 * np.pi
-        hole_pos = (ring_center[0] + hole_distance, ring_center[1])
-        thermode = gp.Round(
-            center = ring_center, 
-            radius = ring_radius + thermode_width / 2 + thermode_gap,
-            inner_radius = ring_radius - thermode_width / 2 + thermode_gap,
-            initial_angle = initial_angle,
-            final_angle = final_angle,
-            tolerance = 1e-3,
-            max_points = 0,
-            **ld_thermode)
-        connection = gp.Rectangle(
-            point1 = (ring_center[0] + hole_distance, ring_center[1] + hole_radius/2),
-            point2 = (ring_center[0] + ring_radius + thermode_gap - thermode_width/2, 
-                      ring_center[1] - hole_radius/2),
-            **ld_thermode)
-        holebase = gp.Round(
-            center = hole_pos, 
-            radius = hole_radius + 0.5,
-            tolerance = 1e-3,
-            **ld_thermode)
-        arm1 = gp.boolean(connection, holebase, "or", **ld_thermode)
-        arm1 = arm1.rotate(initial_angle, ring_center)
-        thermode = gp.boolean(thermode, arm1, "or", **ld_thermode)
-        arm2 = gp.boolean(connection, holebase, "or", **ld_thermode)
-        arm2 = arm2.rotate(final_angle, ring_center)
-        thermode = gp.boolean(thermode, arm2, "or", **ld_thermode)
-        thermodes = [thermode]
+    #     initial_angle = initial_angle_deg / 180 * np.pi
+    #     final_angle = final_angle_deg / 180 * np.pi
+    #     hole_pos = (ring_center[0] + hole_distance, ring_center[1])
+    #     thermode = gp.Round(
+    #         center = ring_center, 
+    #         radius = ring_radius + thermode_width / 2 + thermode_gap,
+    #         inner_radius = ring_radius - thermode_width / 2 + thermode_gap,
+    #         initial_angle = initial_angle,
+    #         final_angle = final_angle,
+    #         tolerance = 1e-3,
+    #         max_points = 0,
+    #         **ld_thermode)
+    #     connection = gp.Rectangle(
+    #         point1 = (ring_center[0] + hole_distance, ring_center[1] + hole_radius/2),
+    #         point2 = (ring_center[0] + ring_radius + thermode_gap - thermode_width/2, 
+    #                   ring_center[1] - hole_radius/2),
+    #         **ld_thermode)
+    #     holebase = gp.Round(
+    #         center = hole_pos, 
+    #         radius = hole_radius + 0.5,
+    #         tolerance = 1e-3,
+    #         **ld_thermode)
+    #     arm1 = gp.boolean(connection, holebase, "or", **ld_thermode)
+    #     arm1 = arm1.rotate(initial_angle, ring_center)
+    #     thermode = gp.boolean(thermode, arm1, "or", **ld_thermode)
+    #     arm2 = gp.boolean(connection, holebase, "or", **ld_thermode)
+    #     arm2 = arm2.rotate(final_angle, ring_center)
+    #     thermode = gp.boolean(thermode, arm2, "or", **ld_thermode)
+    #     thermodes = [thermode]
         
-        holepos1 = rotate(hole_pos, ring_center, initial_angle_deg)
-        holepos2 = rotate(hole_pos, ring_center, final_angle_deg)
-        holepos = [holepos2, holepos1]
+    #     holepos1 = rotate(hole_pos, ring_center, initial_angle_deg)
+    #     holepos2 = rotate(hole_pos, ring_center, final_angle_deg)
+    #     holepos = [holepos2, holepos1]
         
-        return thermodes, holepos
+    #     return thermodes, holepos
     
     def single_thermode(
             ring_center,
@@ -296,18 +296,18 @@ def create_thermode(
     rotate_angle = rotate_angle_deg / 180 * np.pi
     if thermode_type == 'none':
         holepos = []
-    elif thermode_type == 'surface':
-        thermode, holepos = surface_thermode(
-            ring_center = ring_center, 
-            thermode_width = thermode_width, 
-            thermode_gap = thermode_gap, 
-            ring_radius = ring_radius, 
-            hole_radius = hole_radius, 
-            hole_distance = hole_distance, 
-            hole_num = hole_num,
-            initial_angle_deg = 90 - thermode_angle_deg / 2, 
-            final_angle_deg = 90 + thermode_angle_deg / 2)
-        thermodes.extend(thermode)
+    # elif thermode_type == 'surface':
+    #     thermode, holepos = surface_thermode(
+    #         ring_center = ring_center, 
+    #         thermode_width = thermode_width, 
+    #         thermode_gap = thermode_gap, 
+    #         ring_radius = ring_radius, 
+    #         hole_radius = hole_radius, 
+    #         hole_distance = hole_distance, 
+    #         hole_num = hole_num,
+    #         initial_angle_deg = 90 - thermode_angle_deg / 2, 
+    #         final_angle_deg = 90 + thermode_angle_deg / 2)
+    #     thermodes.extend(thermode)
     elif thermode_type == 'single':
         thermode, holepos = single_thermode(
             ring_center = ring_center, 
@@ -352,10 +352,7 @@ def create_thermode(
             final_width = hole_radius * 2, 
             taper_length = 0)
         thermodes.extend(wires)
-        if (rotate_angle_deg % 360) <= 90 or (rotate_angle_deg % 360) >= 270:
-            holepos = [holepos2[0], holepos1[1]]
-        else:
-            holepos = [holepos2[1], holepos1[0]]
+        holepos = [holepos2[0], holepos1[1]]
         
     for thermode in thermodes:
         thermode.rotate(rotate_angle, ring_center)

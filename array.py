@@ -212,13 +212,20 @@ class Array(object):
             opts.append(opt)
         return opts
     
-    def create_opt(self, tolerance=1e-3):
+    def create_opt(self, flips=False, tolerance=1e-3):
         opts = self.get_opt()
         structures = []
         holepos = []
         disp_list = [((self.nn-1)/2 - kk) * self.dy for kk in range(self.nn)]
+        isflip_listed = isinstance(flips, list) and len(flips) == self.nn
+        if isinstance(flips, list) and len(flips) != self.nn:
+            raise ValueError('list of flips should match waveguide number')
         for kk in range(self.nn):
-            structure, holes = opts[kk].create((0, disp_list[kk]), tolerance)            
+            if isflip_listed:
+                flip = flips[kk]
+            else:
+                flip = flips
+            structure, holes = opts[kk].create((0, disp_list[kk]), flip, tolerance)            
             structures.extend(structure)
             holepos.extend(holes)
         if self.ns > 0:
@@ -360,8 +367,8 @@ class Array(object):
                 structures.extend(wires)
         return structures    
     
-    def __call__(self, cell, bias=(0,0), rotate_angle_deg=0, tolerance=1e-3):
-        structures, opt_holepos = self.create_opt(tolerance)
+    def __call__(self, cell, bias=(0,0), flips=False, rotate_angle_deg=0, tolerance=1e-3):
+        structures, opt_holepos = self.create_opt(flips, tolerance)
         if self.pv is not None:
             structures.extend(self.create_elec(opt_holepos))
         if rotate_angle_deg != 0:
