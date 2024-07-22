@@ -312,18 +312,15 @@ class Reverse_Waveguide(BasicDual_Waveguide):
         
     def create_taper(
             self, 
-            taper_length = 100, 
-            tip_length = 100, 
-            tip_width_nm = 100, 
-            tip_width2_nm = 100,
+            taper_length, 
+            tip_length, 
+            tip_width_nm, 
+            tip_width2_nm,
             anchor_base = 4,
             anchor_length = 4
             ):
-        
-        ly2 = self.cy - self.br * 2 -\
-            (self.rr + self.cg2 + self.ww2/2) * (2*np.cos(self.ca2/2) -1)
-        ry2 = (self.cy - self.rr - self.cg2 - self.ww2/2) * 2 - ly2
-            
+        cr2 = self.rr + self.cg2 + self.cw2/2
+        ly2 = self.cy - self.br * 2 - cr2 * (2*np.cos(self.ca2/2) -1)            
         couplers = []
         couplers.extend(
             super().create_taper(

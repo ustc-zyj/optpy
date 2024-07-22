@@ -175,9 +175,9 @@ class Basic_Waveguide(object):
         
     def create_taper(
             self, 
-            taper_length = 100, 
-            tip_length = 100, 
-            tip_width_nm = 100, 
+            taper_length, 
+            tip_length, 
+            tip_width_nm, 
             anchor_base = 4,
             anchor_length = 4): 
         if hasattr(self, 'ly') and hasattr(self, 'ry'):
@@ -201,8 +201,8 @@ class Basic_Waveguide(object):
                 anchor_base = anchor_base, 
                 anchor_length = anchor_length)
         else:
-            wy = self.cy + \
-                (self.rr + self.cg + self.ww/2) * (2*np.cos(self.ca/2) - 1)
+            cr = self.rr + self.cg + self.cw/2
+            wy = self.cy + cr * (2*np.cos(self.ca/2) - 1)
             couplers = create_taper(
                 posl = (self.lx, wy), 
                 posr = (self.rx, wy), 
