@@ -183,8 +183,8 @@ class UPB_Waveguide(Basic_Waveguide):
     def create_waveguide(self, tolerance=1e-3):
         ld_waveguide = get_ld('ld_waveguide')
         ld_couple = get_ld('ld_couple')
-        cr1 = self.rr + self.cg + self.ww/2
-        cr2 = self.rr + self.cg2 + self.ww2/2
+        cr1 = self.rr + self.cg + self.cw/2
+        cr2 = self.rr + self.cg2 + self.cw2/2
         wy1 = self.cy + cr1
         wy2 = self.cy - cr2
         sly = self.cy
@@ -521,10 +521,10 @@ class UPB_Waveguide(Basic_Waveguide):
     
     def create_taper(
             self, 
-            taper_length = 100, 
-            tip_length = 100, 
-            tip_width_nm = 100, 
-            tip_width2_nm = 100,
+            taper_length, 
+            tip_length, 
+            tip_width_nm, 
+            tip_width2_nm,
             anchor_base = 4,
             anchor_length = 4):         
         sly = self.cy
@@ -567,8 +567,8 @@ class UPB_Waveguide(Basic_Waveguide):
         ld_thermode = get_ld('ld_pad')
         if self.tv is None:
             return thermodes, holepos
-        cr1 = self.rr + self.cg + self.ww/2
-        cr2 = self.rr + self.cg2 + self.ww2/2
+        cr1 = self.rr + self.cg + self.cw/2
+        cr2 = self.rr + self.cg2 + self.cw2/2
         ar = cr2 * (2 - 2*(1-np.cos(self.ca2/2)) - 2*np.sin(self.ca2/2)) / 2
         tpara = self.tv.copy()
         tw = tpara['thermode_width']
@@ -624,10 +624,10 @@ class UPB_Waveguide(Basic_Waveguide):
         # Thermode 1 on ring 1
         T, hp = create_thermode(
             ring_center = (self.cx, self.cy),
-            thermode_type = 'surface',
+            thermode_type = 'single',
             thermode_angle_deg = 180,
             thermode_width = tw,
-            thermode_gap = -self.rw/2,
+            thermode_gap = -(self.rw/2 + tw/2),
             ring_radius = self.rr,
             hole_radius = hr,
             hole_distance = self.rr * 1.5,
@@ -643,10 +643,10 @@ class UPB_Waveguide(Basic_Waveguide):
         rdy = (self.rr*2 + self.rg) * np.sin(self.ra)
         T, hp = create_thermode(
             ring_center = (self.cx + rdx, self.cy + rdy),
-            thermode_type = 'surface',
+            thermode_type = 'single',
             thermode_angle_deg = 180,
             thermode_width = tw,
-            thermode_gap = -self.rw/2,
+            thermode_gap = -(self.rw/2 + tw/2),
             ring_radius = self.rr,
             hole_radius = hr,
             hole_distance = self.rr * 1.5,
