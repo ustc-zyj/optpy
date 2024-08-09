@@ -211,7 +211,7 @@ class UPB_Waveguide(Basic_Waveguide):
             radius = self.br,
             angle = 'r',
             tolerance = tolerance,
-            final_width = self.ww
+            final_width = self.ww,
             **ld_waveguide)
         waveguide.segment(
             length = dxl,
@@ -341,7 +341,7 @@ class UPB_Waveguide(Basic_Waveguide):
             radius = self.br,
             angle = 'l',
             tolerance = tolerance,
-            final_width = self.ww,
+            final_width = self.ww2,
             **ld_waveguide)
         waveguide.segment(
             length = self.cx - self.lx - self.br*6 - self.sl +\
@@ -350,7 +350,7 @@ class UPB_Waveguide(Basic_Waveguide):
             **ld_waveguide)
         waveguide.segment(
             length = self.br,
-            final_width = self.cw
+            final_width = self.cw2,
             **ld_waveguide)
         waveguide.turn(
             radius = cr2,
@@ -393,7 +393,7 @@ class UPB_Waveguide(Basic_Waveguide):
             **ld_waveguide)
         waveguide.segment(
             length = self.br,
-            final_width = self.ww
+            final_width = self.ww2,
             **ld_waveguide)
         waveguide.segment(
             length = self.al/2 - self.br,
@@ -405,12 +405,12 @@ class UPB_Waveguide(Basic_Waveguide):
             tolerance = tolerance * 0.1,
             **ld_waveguide)
         waveguide.segment(
-            length = self.br,
-            final_width = self.cw
-            **ld_waveguide)
-        waveguide.segment(
             length = self.al/2 - self.br +\
                 cr2 * (2 * (1-np.cos(self.ca2/2)) + 2 * np.sin(self.ca2/2)),
+            **ld_waveguide)
+        waveguide.segment(
+            length = self.br,
+            final_width = self.cw2,
             **ld_waveguide)
         waveguide.turn(
             radius = cr2,
@@ -440,7 +440,7 @@ class UPB_Waveguide(Basic_Waveguide):
             **ld_couple)
         waveguide.segment(
             length = self.br,
-            final_width = self.ww
+            final_width = self.ww2,
             **ld_waveguide)
         waveguide.segment(
             length = self.al/2 + ar - self.br,
