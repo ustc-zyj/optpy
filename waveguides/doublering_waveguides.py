@@ -69,7 +69,6 @@ class UPB_Waveguide(Basic_Waveguide):
             splitter_width_nm,
             splitter_gap_nm,
             splitter_length,
-            draw_balance = True,
             draw_waveguide1 = True,
             draw_waveguide2 = True,
             cpara = None,
@@ -161,7 +160,6 @@ class UPB_Waveguide(Basic_Waveguide):
             raise ValueError("Splitter length should be positive") 
         
         # Translate flags
-        self.db = draw_balance
         self.dw1 = draw_waveguide1
         self.dw2 = draw_waveguide2
     
@@ -189,8 +187,6 @@ class UPB_Waveguide(Basic_Waveguide):
         wy2 = self.cy - cr2
         sly = self.cy
         sry = self.cy
-        diff = self.al * 4 + cr2 * 4 * np.pi + self.br * 2 * np.pi
-        num = int(diff // (self.br * 2 * np.pi)) if self.db else 0
         
         # main waveguide
         waveguides = []
@@ -199,12 +195,6 @@ class UPB_Waveguide(Basic_Waveguide):
         dy1 = self.br*2 - cr1 * (2 - 2 * (1-np.cos(self.ca/2))) + ly1 - wy1
         dxl = self.cx - self.lx - self.br * 6 - self.sl - cr1*2
         dxr = self.rx - self.cx - self.br * 6 - self.sl - cr1*2
-        if self.dw2:
-            nl = int(num * (dxl / (dxl + dxr)))
-            nr = num - nl
-        else:
-            nl = 0
-            nr = 0
         waveguide = gp.Path(
             width = self.sw,
             initial_point = (self.lx, ly1))
@@ -221,25 +211,10 @@ class UPB_Waveguide(Basic_Waveguide):
             radius = self.br,
             angle = 'r',
             tolerance = tolerance,
+            final_width = self.ww
             **ld_waveguide)
-        for _ in range(nl):
-            waveguide.turn(
-                radius = self.br,
-                angle = 'l',
-                tolerance = tolerance * 5,
-                **ld_waveguide)
-            waveguide.turn(
-                radius = self.br,
-                angle = 'rr',
-                tolerance = tolerance * 5,
-                **ld_waveguide)
-            waveguide.turn(
-                radius = self.br,
-                angle = 'l',
-                tolerance = tolerance * 5,
-                **ld_waveguide)
         waveguide.segment(
-            length = dxl - self.br * 4 * nl,
+            length = dxl,
             **ld_waveguide)
         waveguide.segment(
             length = self.br - 2 * cr1 * np.sin(self.ca/2),
@@ -293,28 +268,13 @@ class UPB_Waveguide(Basic_Waveguide):
             final_width = self.sw,
             **ld_waveguide)
         waveguide.segment(
-            length = dxr - self.br * 4 * nr,
+            length = dxr,
             **ld_waveguide)
-        for _ in range(nr):
-            waveguide.turn(
-                radius = self.br,
-                angle = 'l',
-                tolerance = tolerance * 5,
-                **ld_waveguide)
-            waveguide.turn(
-                radius = self.br,
-                angle = 'rr',
-                tolerance = tolerance * 5,
-                **ld_waveguide)
-            waveguide.turn(
-                radius = self.br,
-                angle = 'l',
-                tolerance = tolerance * 5,
-                **ld_waveguide)
         waveguide.turn(
             radius = self.br,
             angle = 'r',
             tolerance = tolerance,
+            final_width = self.sw,
             **ld_waveguide)
         waveguide.turn(
             radius = self.br,
@@ -381,11 +341,16 @@ class UPB_Waveguide(Basic_Waveguide):
             radius = self.br,
             angle = 'l',
             tolerance = tolerance,
+            final_width = self.ww,
             **ld_waveguide)
         waveguide.segment(
-            length = self.cx - self.lx - self.br*5 - self.sl +\
+            length = self.cx - self.lx - self.br*6 - self.sl +\
                 cr2 * 2 * np.sin(self.ca2/2),
             direction = "+x",
+            **ld_waveguide)
+        waveguide.segment(
+            length = self.br,
+            final_width = self.cw
             **ld_waveguide)
         waveguide.turn(
             radius = cr2,
@@ -427,7 +392,11 @@ class UPB_Waveguide(Basic_Waveguide):
             tolerance = tolerance * 0.1,
             **ld_waveguide)
         waveguide.segment(
-            length = self.al/2,
+            length = self.br,
+            final_width = self.ww
+            **ld_waveguide)
+        waveguide.segment(
+            length = self.al/2 - self.br,
             direction = "-x",
             **ld_waveguide)
         waveguide.turn(
@@ -436,7 +405,11 @@ class UPB_Waveguide(Basic_Waveguide):
             tolerance = tolerance * 0.1,
             **ld_waveguide)
         waveguide.segment(
-            length = self.al/2 +\
+            length = self.br,
+            final_width = self.cw
+            **ld_waveguide)
+        waveguide.segment(
+            length = self.al/2 - self.br +\
                 cr2 * (2 * (1-np.cos(self.ca2/2)) + 2 * np.sin(self.ca2/2)),
             **ld_waveguide)
         waveguide.turn(
@@ -466,7 +439,11 @@ class UPB_Waveguide(Basic_Waveguide):
             tolerance = tolerance * 0.1,
             **ld_couple)
         waveguide.segment(
-            length = self.al/2 + ar,
+            length = self.br,
+            final_width = self.ww
+            **ld_waveguide)
+        waveguide.segment(
+            length = self.al/2 + ar - self.br,
             direction = "-x",
             **ld_waveguide)
         waveguide.turn(
@@ -505,6 +482,7 @@ class UPB_Waveguide(Basic_Waveguide):
             radius = self.br,
             angle = 'l',
             tolerance = tolerance,
+            final_width = self.sw,
             **ld_waveguide)
         waveguide.turn(
             radius = self.br,
