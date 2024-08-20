@@ -401,7 +401,7 @@ class MMI_MZI(object):
             electrodes.append(holecap)
         return electrodes, hpos_list
     
-    def create(self, bias=(0,0), tolerance=1e-3):
+    def create(self, bias=(0,0), flip=False, tolerance=1e-3):
         structures = []
         holepos = []
         structures.extend(self.create_waveguide(tolerance))
@@ -409,6 +409,11 @@ class MMI_MZI(object):
         structures.extend(self.create_name())
         electrodes, holepos = self.create_electrode()
         structures.extend(electrodes)
+        if flip:
+            for structure in structures:
+                structure.mirror((self.cx, self.cy), (self.cx + 1, self.cy))
+            for kk, pos in enumerate(holepos):
+                holepos[kk] = (2 * self.cx - pos[0], pos[1])
         for structure in structures:
             structure.translate(bias[0], bias[1])
         for kk in range(len(holepos)):
@@ -416,8 +421,8 @@ class MMI_MZI(object):
             holepos[kk] = (pos[0] + bias[0], pos[1] + bias[1])
         return structures, holepos
     
-    def __call__(self, cell, bias=(0,0), tolerance=1e-3):
-        structures, holepos = self.create(bias, tolerance)
+    def __call__(self, cell, bias=(0,0), flip=False, tolerance=1e-3):
+        structures, holepos = self.create(bias, flip, tolerance)
         cell.add(structures)
         return holepos
 
@@ -805,13 +810,18 @@ class DC_MZI(object):
             electrodes.append(holecap)
         return electrodes, hpos_list
     
-    def create(self, bias=(0,0), tolerance=1e-3):
+    def create(self, bias=(0,0), flip=False, tolerance=1e-3):
         structures = []
         structures.extend(self.create_waveguide(tolerance))
         structures.extend(self.create_coupler(tolerance))
         structures.extend(self.create_name())
         electrodes, holepos = self.create_electrode()
         structures.extend(electrodes)
+        if flip:
+            for structure in structures:
+                structure.mirror((self.cx, self.cy), (self.cx + 1, self.cy))
+            for kk, pos in enumerate(holepos):
+                holepos[kk] = (2 * self.cx - pos[0], pos[1])
         for structure in structures:
             structure.translate(bias[0], bias[1])
         for kk in range(len(holepos)):
@@ -819,7 +829,7 @@ class DC_MZI(object):
             holepos[kk] = (pos[0] + bias[0], pos[1] + bias[1])
         return structures, holepos
     
-    def __call__(self, cell, bias=(0,0), tolerance=1e-3):
-        structures, holepos = self.create(bias, tolerance)
+    def __call__(self, cell, bias=(0,0), flip=False, tolerance=1e-3):
+        structures, holepos = self.create(bias, flip, tolerance)
         cell.add(structures)
         return holepos
